@@ -20,6 +20,21 @@ data "oci_core_images" "ol7" {
   }
 }
 
+data "oci_core_images" "win" {
+  compartment_id      = "${var.compartment_ocid}"
+  operating_system    = "Windows"
+  sort_by             = "TIMECREATED"
+  sort_order          = "DESC"
+  state               = "AVAILABLE"
+
+  # peg to "Windows-Server-2016-Standard-Edition-VM-2020.03.16-0"
+  filter {
+    name = "display_name"
+    values = ["Windows-Server-2016-Standard-Edition-VM-2020.03.16-0"]
+    regex = false
+  }
+}
+
 data "oci_identity_availability_domains" "availability_domains" {
   compartment_id = var.compartment_ocid
 }
