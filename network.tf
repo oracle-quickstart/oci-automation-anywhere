@@ -1,6 +1,9 @@
 
 locals {
   use_existing_network = var.network_strategy == "Use Existing VCN and Subnet" ? true : false
+  tcp_protocol  = "6"
+  all_protocols = "all"
+  anywhere      = "0.0.0.0/0"
 }
 
 # VCN comes with default route table, security list and DHCP options
@@ -71,6 +74,21 @@ resource "oci_core_network_security_group_security_rule" "rule_ingress_tcp443" {
     destination_port_range {
       min = 443
       max = 443
+    }
+  }
+}
+
+resource "oci_core_network_security_group_security_rule" "rule_ingress_tcp1433" {
+  network_security_group_id = oci_core_network_security_group.nsg.id
+  protocol                  = "6"
+  direction                 = "INGRESS"
+  source                    = var.nsg_whitelist_ip != "" ? var.nsg_whitelist_ip : "0.0.0.0/0"
+  stateless                 = false
+
+  tcp_options {
+    destination_port_range {
+      min = 1433
+      max = 1433
     }
   }
 }
