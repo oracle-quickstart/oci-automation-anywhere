@@ -14,7 +14,7 @@ locals {
   # local.use_existing_network defined in network.tf and referenced here
 }
 
-resource "oci_core_instance" "simple-vm" {
+resource "oci_core_instance" "a2019" {
   availability_domain = local.ad
   compartment_id      = var.compartment_ocid
   display_name        = var.vm_display_name
@@ -24,7 +24,8 @@ resource "oci_core_instance" "simple-vm" {
     subnet_id        = local.use_existing_network ? var.subnet_id : oci_core_subnet.public_subnet[0].id
     display_name     = var.vm_display_name
     assign_public_ip = true
-    hostname_label = "simple-vm"
+    hostname_label   = "a2019"
+    nsg_ids          = [oci_core_network_security_group.nsg.id]
   }
 
   source_details {
