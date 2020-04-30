@@ -3,15 +3,15 @@
 ###
 
 output "instance_public_ip" {
-  value = oci_core_instance.simple-vm.public_ip
+  value = oci_core_instance.a2019.public_ip
 }
 
 output "instance_private_ip" {
-  value = oci_core_instance.simple-vm.private_ip
+  value = oci_core_instance.a2019.private_ip
 }
 
 output "instance_https_url" {
-  value = "https://${oci_core_instance.simple-vm.public_ip}"
+  value = "https://${oci_core_instance.a2019.public_ip}"
 }
 
 ###
