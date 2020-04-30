@@ -42,7 +42,7 @@ variable "mp_listing_resource_version" {
 
 variable "vm_display_name" {
   description = "Instance Name"
-  default     = "simple"
+  default     = "a2019"
 }
 
 variable "vm_compute_shape" {
