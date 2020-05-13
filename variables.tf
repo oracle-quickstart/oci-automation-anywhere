@@ -14,7 +14,7 @@ variable "region" {
 ############################
 
 variable "enabled" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -34,6 +34,20 @@ variable "mp_listing_resource_version" {
   // default = "1.0"
   default     = ""
   description = "Marketplace Listing Package/Resource Version"
+}
+
+############################
+#  SQL Configuration   #
+############################
+
+variable sql_user {
+  default = "SA"
+}
+
+variable sql_pw {}
+
+variable sql_ip {
+  default = "10.0.0.2"
 }
 
 ############################

@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
-
+# espects:
+# export sql_pw='xxx'
+# export sql_user='yyy'
 cd ~opc
 
 # Normal box urls expire after use
@@ -10,6 +11,29 @@ cd ~opc
 # add sensible retry flags?
 wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/Fl_8n_q4zz_477PMI31mol6CquUCyujMFL6dhHDRETU/n/idmmwyjidb5r/b/installers/o/AutomationAnywhereEnterprise_A2019_el7.bin
 chmod 755 AutomationAnywhereEnterprise_A2019_el7.bin
+
+###
+# metadata
+###
+echo "Gathering metadata..."
+
+# Config is assumed to be in this location in instance metadata
+export CONFIG_LOCATION='.metadata.config'
+
+public_ip=$(oci-public-ip -j | jq -r '.publicIp')
+private_ip=$(hostname -I)
+
+json=$(curl -sSL http://169.254.169.254/opc/v1/instance/)
+shape=$(echo $json | jq -r .shape)
+faultdomain=$(echo $json | jq -r .faultDomain)
+
+echo "$public_ip $private_ip $shape $faultdomain"
+
+echo $json | jq $CONFIG_LOCATION
+
+sqlserver_ip=$(echo $json | jq -r $CONFIG_LOCATION.sqlserver_ip)
+
+echo "sqlserver_ip: $sqlserver_ip"
 
 ##############
 # SQL Server developer test
@@ -38,6 +62,10 @@ echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~opc/.bash_profile
 echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~opc/.bashrc
 ##############
 
+# resize sda3 mounted on /, and grow fs
+# size is hardcoed in instance tf
+growpart /dev/sda 3
+xfs_growfs / -d
 
 # force a silent install
 yum install -y expect
@@ -83,7 +111,7 @@ send "1\r"
 
 # sql on localhost
 expect "Server (Default: localhost):"
-send "\r"
+send "$sqlserver_ip\r"
 
 # sql port to default 1433
 expect "Port (Default: 1433):"
@@ -95,11 +123,11 @@ send "\r"
 
 # db user
 expect "Login ID :"
-send "SA\r"
+send "$sql_user\r"
 
 # db pw
 expect "Please Enter the Password:"
-send "FooBar1234!!\r"
+send "$sql_pw\r"
 
 # db secure conn
 expect "ENTER THE NUMBER FOR YOUR CHOICE, OR PRESS <ENTER> TO ACCEPT THE DEFAULT:"
@@ -123,9 +151,9 @@ EOF
 chmod 755 a2019_silent_install
 ./a2019_silent_install
 
-# Testing local shared dir
-mkdir /mnt/test
-chmod 777 /mnt/test
+# Local shared dir
+mkdir -p /opt/automationanywhere/server_files
+chown crkernel:controlroom /opt/automationanywhere/server_files
 
 systemctl stop firewalld
 systemctl is-active firewalld

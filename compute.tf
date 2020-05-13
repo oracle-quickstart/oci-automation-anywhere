@@ -9,7 +9,7 @@ locals {
 
   # Logic to choose platform or mkpl image based on
   # var.enabled
-  image          = var.enabled ? var.mp_listing_resource_id : local.platform_image
+  image = var.enabled ? var.mp_listing_resource_id : local.platform_image
 
   # local.use_existing_network defined in network.tf and referenced here
 }
@@ -29,13 +29,67 @@ resource "oci_core_instance" "a2019" {
   }
 
   source_details {
+    source_type             = "image"
+    source_id               = local.image
+    boot_volume_size_in_gbs = 550
+  }
+
+  metadata = {
+    ssh_authorized_keys = var.ssh_public_key
+    user_data = base64encode(
+      join(
+        "\n",
+        [
+          "#!/usr/bin/env bash",
+          "export sql_pw='${var.sql_pw}'",
+          "export sql_user='${var.sql_user}'"
+          file("./scripts/a2019.sh")
+        ]
+      )
+    )
+  }
+
+  extended_metadata = {
+    config = jsonencode(
+      {
+        "sqlserver_ip" = oci_core_instance.sqlserver.private_ip
+      },
+    )
+  }
+
+}
+
+resource "oci_core_instance" "sqlserver" {
+  availability_domain = local.ad
+  compartment_id      = var.compartment_ocid
+  display_name        = "sqlserver"
+  shape               = "VM.Standard2.2"
+
+  create_vnic_details {
+    subnet_id        = local.use_existing_network ? var.subnet_id : oci_core_subnet.public_subnet[0].id
+    display_name     = var.vm_display_name
+    assign_public_ip = true
+    hostname_label   = "sql-developer"
+    nsg_ids          = [oci_core_network_security_group.nsg.id]
+  }
+
+  source_details {
     source_type = "image"
     source_id   = local.image
   }
 
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
-    user_data = base64encode(file("./scripts/a2019.sh"))
+    user_data = base64encode(
+      join(
+        "\n",
+        [
+          "#!/usr/bin/env bash",
+          "export MSSQL_SA_PASSWORD='FooBar1234!!'",
+          file("./scripts/sql_dev.sh")
+        ]
+      )
+    )
   }
 
 }
