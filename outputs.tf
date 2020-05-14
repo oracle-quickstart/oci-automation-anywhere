@@ -2,15 +2,15 @@
 # compute.tf outputs
 ###
 
-output "instance_public_ip" {
+output "a2019_public_ip" {
   value = oci_core_instance.a2019.public_ip
 }
 
-output "instance_private_ip" {
+output "a2019_private_ip" {
   value = oci_core_instance.a2019.private_ip
 }
 
-output "instance_https_url" {
+output "a2019_https_url" {
   value = "https://${oci_core_instance.a2019.public_ip}"
 }
 
