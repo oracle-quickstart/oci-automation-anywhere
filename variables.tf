@@ -50,6 +50,11 @@ variable sql_ip {
   default = "10.0.0.2"
 }
 
+variable db_type {
+  # Understood values: "SQL Server Developer", "Existing SQL Server"
+  default = "SQL Server Developer"
+}
+
 ############################
 #  Compute Configuration   #
 ############################
