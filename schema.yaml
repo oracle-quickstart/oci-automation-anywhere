@@ -9,10 +9,10 @@ version: "20190304"
 # (Optional)
 logoUrl: https://cloudmarketplace.oracle.com/marketplace/content?contentId=1234
 
-# Used in Application Information tab to Hyperlink Title and Logo to the Marketplace 
+# Used in Application Information tab to Hyperlink Title and Logo to the Marketplace
 # Listing.
 # Also used to link to Listing Usage section for "View Instructions".
-# (Optional) If it is missing, Application Information uses the 
+# (Optional) If it is missing, Application Information uses the
 # "marketplace-listing-id" tag for the same purpose.
 source:
   type: marketplace
@@ -23,41 +23,48 @@ variableGroups:
   - title: "Hidden Variable Group"
     visible: false
     variables:
-      - tenancy_ocid 
-      - region 
+      - tenancy_ocid
+      - compartment_ocid
+      - region
       - mp_listing_id
       - mp_listing_resource_id
-      - mp_listing_resource_version   
-      - availability_domain_number          
+      - mp_listing_resource_version
+      - availability_domain_number
+      - enabled
 
-  - title: "Compute Configuration"
+  - title: "A2019 Configuration"
     variables:
       - vm_display_name
       - vm_compute_shape
       - availability_domain_name
       - ssh_public_key
 
+  - title: "SQL Server Configuration"
+    variables:
+      - db_type
+      - sql_user
+      - sql_pw
+      - sql_ip
 
   - title: "Network Configuration"
     variables:
-      - network_strategy 
-      - vcn_id 
-      - vcn_display_name 
-      - vcn_cidr_block 
-      - vcn_dns_label            
-      - subnet_type 
-      - subnet_span 
-      - subnet_id 
-      - subnet_display_name       
-      - subnet_cidr_block      
+      - network_strategy
+      - vcn_id
+      - vcn_display_name
+      - vcn_cidr_block
+      - vcn_dns_label
+      - subnet_type
+      - subnet_span
+      - subnet_id
+      - subnet_display_name
+      - subnet_cidr_block
       - subnet_dns_label
 
 
   - title: "Additional Configuration"
     variables:
-      - compartment_ocid
-      - nsg_whitelist_ip 
-      - nsg_display_name     
+      - nsg_whitelist_ip
+      - nsg_display_name
 
 variables:
   # Hidden variables
@@ -89,10 +96,11 @@ variables:
     description: Availability Domain
 
   availability_domain_number:
-    type: string    
-    required: false    
+    type: string
+    required: false
     description: Availability Domain Number (Not used)
 
+  # a2019 variables
   ssh_public_key:
     type: string
     required: true
@@ -102,7 +110,7 @@ variables:
   vm_display_name:
     type: string
     required: true
-    default: my-instance
+    default: "a2019"
     title: Instance Name
     description: The name of the Instance
 
@@ -114,10 +122,51 @@ variables:
     dependsOn:
       compartmentId: compartment_ocid
       imageId: mp_listing_resource_id
-      
+
+  # SQL variables
+  db_type:
+    type: enum
+    title: "Database Type"
+    required: true
+    default: "SQL Server Developer"
+    enum:
+      - "SQL Server Developer"
+      - "Existing SQL Server"
+
+  sql_user:
+    type: string
+    required: true
+    title: SQL User
+    default: "SA"
+    description: SQL user used by a2019
+    visible:
+      eq:
+        - db_type
+        - "Existing SQL Server"
+
+  sql_pw:
+    type: password
+    required: true
+    title: SQL password
+    description: Password for SQL user, 8 characters min, contains 3 of lower case, uppercase, number, symbol
+    pattern: "^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\\d\\W])|(?=.*\\W)(?=.*\\d))|(?=.*\\W)(?=.*[A-Z])(?=.*\\d)).{8,}$"
+
+  sql_ip:
+    type: string
+    required: true
+    title: SQL Server IP
+    default: "10.0.0.2"
+    description: IP of existing SQL server instance
+    pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+    visible:
+      eq:
+        - db_type
+        - "Existing SQL Server"
+
+  # Marketplace variables
   mp_listing_id:
-    type: string    
-    required: true    
+    type: string
+    required: true
     description: Marketplace Listing ID
 
   mp_listing_resource_id:
@@ -146,7 +195,7 @@ variables:
   subnet_type:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: enum
     title: Subnet Type
@@ -160,7 +209,7 @@ variables:
   subnet_span:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: enum
     title: Subnet Span
@@ -174,7 +223,7 @@ variables:
   vcn_display_name:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: string
     default: my-vcn
@@ -185,11 +234,11 @@ variables:
   vcn_id:
     visible: #($network_strategy  == "Use Existing VCN and Subnet")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Use Existing VCN and Subnet"
     type: oci:core:vcn:id
     dependsOn:
-      compartmentId: compartment_ocid 
+      compartmentId: compartment_ocid
     required: true
     title: Existing Network
     description: An existing Virtual Cloud Network (VCN) in which to create the compute instances, network resources, and load balancers. If not specified, a new VCN is created.
@@ -197,7 +246,7 @@ variables:
   vcn_cidr_block:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: string
     required: true
@@ -209,7 +258,7 @@ variables:
   subnet_display_name:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: string
     default: my-subnet
@@ -220,7 +269,7 @@ variables:
   subnet_cidr_block:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: string
     default: 10.0.0.0/24
@@ -232,12 +281,12 @@ variables:
   subnet_id:
     visible: #($network_strategy  == "Use Existing VCN and Subnet")
       eq:
-        - network_strategy 
-        - "Use Existing VCN and Subnet"    
+        - network_strategy
+        - "Use Existing VCN and Subnet"
     type: oci:core:subnet:id
     dependsOn:
-      vcnId: vcn_id 
-      compartmentId: compartment_ocid 
+      vcnId: vcn_id
+      compartmentId: compartment_ocid
     default: ''
     required: true
     title: Existing Subnet
@@ -246,24 +295,24 @@ variables:
   vcn_dns_label:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: string
     required: true
     default: myvcn
     title: VCN DNS Label
-    description: VCN DNS Label. Only letters and numbers, starting with a letter. 15 characters max.    
+    description: VCN DNS Label. Only letters and numbers, starting with a letter. 15 characters max.
 
   subnet_dns_label:
     visible: #($network_strategy  == ""Create New VCN and Subnet"")
       eq:
-        - network_strategy 
+        - network_strategy
         - "Create New VCN and Subnet"
     type: string
     required: true
     default: management
     title: Subnet DNS Label
-    description: Subnet DNS Label. Only letters and numbers, starting with a letter. 15 characters max.    
+    description: Subnet DNS Label. Only letters and numbers, starting with a letter. 15 characters max.
 
   nsg_whitelist_ip:
     type: string
@@ -295,11 +344,10 @@ outputs:
     type: link
     title: Public IP
     visible: true
-  
+
   instance_private_ip:
     type: link
     title: Private IP
     visible: true
-  
-primaryOutputButton: ${application_url}
 
+primaryOutputButton: ${application_url}
