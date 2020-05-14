@@ -42,7 +42,7 @@ resource "oci_core_instance" "a2019" {
         [
           "#!/usr/bin/env bash",
           "export sql_pw='${var.sql_pw}'",
-          "export sql_user='${var.sql_user}'"
+          "export sql_user='${var.sql_user}'",
           file("./scripts/a2019.sh")
         ]
       )
@@ -85,7 +85,7 @@ resource "oci_core_instance" "sqlserver" {
         "\n",
         [
           "#!/usr/bin/env bash",
-          "export MSSQL_SA_PASSWORD='FooBar1234!!'",
+          "export MSSQL_SA_PASSWORD='${var.sql_pw}'",
           file("./scripts/sql_dev.sh")
         ]
       )
