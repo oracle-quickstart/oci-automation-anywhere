@@ -42,7 +42,7 @@ resource "oci_core_instance" "a2019" {
         [
           "#!/usr/bin/env bash",
           "export sql_pw='${var.sql_pw}'",
-          "export sql_user='${var.sql_user}'",
+          "export sql_user='${local.sqldev_enabled == 1 ? "SA" : var.sql_user}'",
           file("./scripts/a2019.sh")
         ]
       )
@@ -52,18 +52,24 @@ resource "oci_core_instance" "a2019" {
   extended_metadata = {
     config = jsonencode(
       {
-        "sqlserver_ip" = oci_core_instance.sqlserver.private_ip
+        "sqlserver_ip" = local.sqldev_enabled == 1 ? oci_core_instance.sqlserver-developer[0].private_ip : oci_core_instance.sqlserver-standard[0].private_ip
       },
     )
   }
 
+  depends_on = [
+    oci_core_instance.sqlserver-developer[0],
+    oci_core_instance.sqlserver-standard[0]
+  ]
+
 }
 
-resource "oci_core_instance" "sqlserver" {
+resource "oci_core_instance" "sqlserver-developer" {
   availability_domain = local.ad
   compartment_id      = var.compartment_ocid
   display_name        = "sqlserver"
   shape               = "VM.Standard2.2"
+  count               = local.sqldev_enabled
 
   create_vnic_details {
     subnet_id        = local.use_existing_network ? var.subnet_id : oci_core_subnet.public_subnet[0].id
@@ -90,6 +96,41 @@ resource "oci_core_instance" "sqlserver" {
         ]
       )
     )
+  }
+
+}
+
+resource "oci_core_instance" "sqlserver-standard" {
+  availability_domain = local.ad
+  compartment_id      = var.compartment_ocid
+  display_name        = "sqlserver"
+  shape               = "VM.Standard2.2"
+  count               = local.sql_enabled
+
+  create_vnic_details {
+    subnet_id        = local.use_existing_network ? var.subnet_id : oci_core_subnet.public_subnet[0].id
+    display_name     = var.vm_display_name
+    assign_public_ip = true
+    hostname_label   = "sql-standard"
+    nsg_ids          = [oci_core_network_security_group.nsg.id]
+  }
+
+  source_details {
+    source_type = "image"
+    source_id   = var.sql_mp_listing_resource_id
+  }
+
+  metadata = {
+    user_data = base64encode(join(
+      "\n",
+      [
+        "#ps1_sysnative",
+        "$UserName='opc'",
+        "$DBUser='${var.sql_user}'",
+        "$DBPassword='${var.sql_pw}'",
+        "$Password='${var.password}'",
+        file("${path.module}/scripts/sqlserver.ps")
+    ]))
   }
 
 }

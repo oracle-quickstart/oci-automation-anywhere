@@ -93,6 +93,21 @@ resource "oci_core_network_security_group_security_rule" "rule_ingress_tcp1433" 
   }
 }
 
+resource "oci_core_network_security_group_security_rule" "rule_ingress_tcp3389" {
+  network_security_group_id = oci_core_network_security_group.nsg.id
+  protocol                  = "6"
+  direction                 = "INGRESS"
+  source                    = var.nsg_whitelist_ip != "" ? var.nsg_whitelist_ip : "0.0.0.0/0"
+  stateless                 = false
+
+  tcp_options {
+    destination_port_range {
+      min = 3389
+      max = 3389
+    }
+  }
+}
+
 resource "oci_core_network_security_group_security_rule" "rule_ingress_all_icmp_type3_code4" {
   network_security_group_id = oci_core_network_security_group.nsg.id
   protocol                  = 1

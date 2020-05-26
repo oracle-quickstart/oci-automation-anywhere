@@ -1,4 +1,4 @@
-# espects:
+# expects:
 # export sql_pw='xxx'
 # export sql_user='yyy'
 cd ~opc
@@ -9,7 +9,7 @@ cd ~opc
 # curl https://automationanywhere-support.app.box.com/s/9tx948vtyi9qsxn2cr5k1en5ntgvd5ed/file/643956731765
 
 # add sensible retry flags?
-wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/Fl_8n_q4zz_477PMI31mol6CquUCyujMFL6dhHDRETU/n/idmmwyjidb5r/b/installers/o/AutomationAnywhereEnterprise_A2019_el7.bin
+wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/hwuRn07oZV0hTaKctpEBDG3elYhn9hyaw-z2gEP_wqA/n/idznlsq9y3he/b/installers/o/AutomationAnywhereEnterprise_A2019_el7.bin
 chmod 755 AutomationAnywhereEnterprise_A2019_el7.bin
 
 ###
@@ -38,21 +38,18 @@ echo "sqlserver_ip: $sqlserver_ip"
 ##############
 # SQL Server developer test
 ##############
-curl -o /etc/yum.repos.d/mssql-server.repo https://packages.microsoft.com/config/rhel/7/mssql-server-2019.repo
-yum install -y mssql-server
-
-ACCEPT_EULA='Y' MSSQL_PID='Developer' MSSQL_SA_PASSWORD='FooBar1234!!' MSSQL_TCP_PORT=1433 /opt/mssql/bin/mssql-conf setup
-
-systemctl status mssql-server
-
-systemctl stop firewalld
-echo "systemctl is-active firewalld"
-systemctl is-active firewalld
-echo "Open port 1433"
-firewall-offline-cmd --zone=public --add-port=1433/tcp
-echo "Enable and start firewalld"
-systemctl enable firewalld
-systemctl start firewalld
+#curl -o /etc/yum.repos.d/mssql-server.repo https://packages.microsoft.com/config/rhel/7/mssql-server-2019.repo
+#yum install -y mssql-server
+#ACCEPT_EULA='Y' MSSQL_PID='Developer' MSSQL_SA_PASSWORD='FooBar1234!!' MSSQL_TCP_PORT=1433 /opt/mssql/bin/mssql-conf setup
+#systemctl status mssql-server
+#systemctl stop firewalld
+#echo "systemctl is-active firewalld"
+#systemctl is-active firewalld
+#echo "Open port 1433"
+#firewall-offline-cmd --zone=public --add-port=1433/tcp
+#echo "Enable and start firewalld"
+#systemctl enable firewalld
+#systemctl start firewalld
 
 
 curl -o /etc/yum.repos.d/msprod.repo https://packages.microsoft.com/config/rhel/7/prod.repo
@@ -119,7 +116,7 @@ send "\r"
 
 # db name
 expect "Database Name (Default: AAE-Database):"
-send "\r"
+send "AAE\r"
 
 # db user
 expect "Login ID :"

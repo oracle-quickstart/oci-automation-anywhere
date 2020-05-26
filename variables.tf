@@ -15,24 +15,21 @@ variable "region" {
 
 variable "enabled" {
   type    = bool
-  default = false
+  default = true
 }
 
 variable "mp_listing_id" {
-  // default = "ocid1.appcataloglisting.oc1.."
-  default     = ""
+  default     = "ocid1.appcataloglisting.oc1..aaaaaaaarynguefvgxywlmm6xxx6ta5semeqizqtkam3zdonpsbsfojvgryq"
   description = "Marketplace Listing OCID"
 }
 
 variable "mp_listing_resource_id" {
-  // default = "ocid1.image.oc1.."
-  default     = ""
+  default     = "ocid1.image.oc1..aaaaaaaa3fr43xxlmclw7r5na5oazuaaiy7acmtlwrzqor6wszuz4mro6xzq"
   description = "Marketplace Listing Image OCID"
 }
 
 variable "mp_listing_resource_version" {
-  // default = "1.0"
-  default     = ""
+  default     = "1.0"
   description = "Marketplace Listing Package/Resource Version"
 }
 
@@ -41,18 +38,36 @@ variable "mp_listing_resource_version" {
 ############################
 
 variable sql_user {
-  default = "SA"
+  default = "aa"
 }
 
 variable sql_pw {}
 
+variable password {
+  # password for opc user if using paid SQL option
+  default = ""
+}
 variable sql_ip {
   default = "10.0.0.2"
 }
 
 variable db_type {
-  # Understood values: "SQL Server Developer", "Existing SQL Server"
+  # Understood values: "SQL Server Developer", "Existing SQL Server", "New Paid SQL Server"
   default = "SQL Server Developer"
+}
+
+###
+# Paid sql marketplace image info
+###
+
+variable sql_mp_listing_id {
+  default = "ocid1.appcataloglisting.oc1..aaaaaaaadyirdzoiwya4wt3hqnviqpr4xxhjkm6vzqjd36h2vaoscvwitara"
+}
+variable sql_mp_listing_resource_id {
+  default = "ocid1.image.oc1..aaaaaaaa2zorsxjollcjdq26qijxozek64wv3gvdqf3civlbfwgmc5tpev3a"
+}
+variable sql_mp_listing_resource_version {
+  default = "Microsoft_SQL_2016_Standard_13.0.5366.0-080620192239"
 }
 
 ############################

@@ -1,13 +1,11 @@
 # Title shown in Application Information tab.
-title: Sample Marketplace Stack / ORM Application - BYOL
 # Sub Title shown in Application Information tab.
-description: This is a Sample Marketplace Stack / ORM Application - BYOL
 schemaVersion: 1.1.0
 version: "20190304"
 
 # URL of Logo Icon used on Application Information tab. Logo must be 130x130 pixels.
 # (Optional)
-logoUrl: https://cloudmarketplace.oracle.com/marketplace/content?contentId=1234
+logoUrl: https://cloudmarketplace.oracle.com/marketplace/content?contentId=74207674
 
 # Used in Application Information tab to Hyperlink Title and Logo to the Marketplace
 # Listing.
@@ -29,6 +27,10 @@ variableGroups:
       - mp_listing_id
       - mp_listing_resource_id
       - mp_listing_resource_version
+      - sql_mp_listing_id
+      - sql_mp_listing_resource_id
+      - sql_mp_listing_resource_version
+      - password
       - availability_domain_number
       - enabled
 
@@ -132,6 +134,7 @@ variables:
     enum:
       - "SQL Server Developer"
       - "Existing SQL Server"
+#      - "New Paid SQL Server"
 
   sql_user:
     type: string
@@ -331,8 +334,7 @@ variables:
 outputGroups:
   - title: "Output"
     outputs:
-      - ${instance_public_ip}
-      - ${instance_id}
+      - ${A2019 Https Url}
 
 outputs:
   application_url:
