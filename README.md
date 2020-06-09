@@ -1,5 +1,5 @@
 # oci-automation-anywhere
-This is a Terraform module that deploys [Automation Anywhere](https://www.automationanywhere.com) on [Oracle Cloud Infrastructure (OCI)](https://cloud.oracle.com/en_US/cloud-infrastructure).  It is developed jointly by Oracle and Automation Anywhere.
+This is a Terraform module that deploys [Automation Anywhere](https://www.automationanywhere.com) on [Oracle Cloud Infrastructure (OCI)](https://cloud.oracle.com/en_US/cloud-infrastructure).  It is developed jointly by Oracle and Automation Anywhere.  While the Quick Start is great for extremely technical users, the Marketplace can also be useful as it provides a GUI deployment of Automation Anywhere.  That listing is contains the same Terraform as the Quick Start and is available [here](https://cloudmarketplace.oracle.com/marketplace/en_US/listing/73714334).
 
 ## Prerequisites
 First off you'll need to do some pre deploy setup.  That's all detailed [here](https://github.com/oracle/oci-quickstart-prerequisites).
