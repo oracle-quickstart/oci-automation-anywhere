@@ -4,12 +4,14 @@ locals {
   # Use of max() prevents out of index lookup call.
   ad = var.availability_domain_number >= 0 ? data.oci_identity_availability_domains.availability_domains.availability_domains[max(0, var.availability_domain_number)]["name"] : var.availability_domain_name
 
-  # Platform OL7 image regarless of region
-  platform_image = data.oci_core_images.ol7.images[0].id
+  # Platform OL7 image regardless of region
+  # This breaks if pegged image removed from the datasource, commenting out for now
+  # image datasource unused atm
+  # platform_image = data.oci_core_images.ol7.images[0].id
 
-  # Logic to choose platform or mkpl image based on
-  # var.enabled
-  image = var.enabled ? var.mp_listing_resource_id : local.platform_image
+  # Logic to choose platform or mkpl image based on var.enabled
+  # Hardcoding due to ^^^
+  image = var.mp_listing_resource_id
 
   # local.use_existing_network defined in network.tf and referenced here
 }
