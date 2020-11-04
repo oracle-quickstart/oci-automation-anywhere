@@ -52,7 +52,7 @@ variable sql_ip {
 }
 
 variable db_type {
-  # Understood values: "SQL Server Developer", "Existing SQL Server", "New Paid SQL Server"
+  description = "Understood values: 'SQL Server Developer', 'Existing SQL Server', 'New Paid SQL Server' "
   default = "SQL Server Developer"
 }
 
